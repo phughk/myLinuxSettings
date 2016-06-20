@@ -1,6 +1,7 @@
 ## Additional env configuration
 export PATH=$PATH:/home/hugh/opt/bin
 export GIT_EDITOR=vim
+export DOCKER_IP=127.0.0.1
 
 ## Prompt
 RED=$(tput setaf 1)

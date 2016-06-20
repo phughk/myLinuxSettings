@@ -1,5 +1,6 @@
-## Additional software
+## Additional env configuration
 export PATH=$PATH:/home/hugh/opt/bin
+export GIT_EDITOR=vim
 
 ## Prompt
 RED=$(tput setaf 1)

@@ -1,2 +1,2 @@
 #!/bin/sh
-docker ps --format="{{.ID}}" | xargs docker stop | xargs docker rm
+docker ps -q | xargs docker stop | xargs docker rm

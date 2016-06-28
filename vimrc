@@ -19,6 +19,7 @@ NeoBundle 'Shougo/neosnippet-snippets'
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'ctrlpvim/ctrlp.vim'
 NeoBundle 'flazz/vim-colorschemes'
+NeoBundle 'leafgarland/typescript-vim'
 
 " You can specify revision/branch/tag.
 NeoBundle 'Shougo/vimshell', { 'rev' : '3787e5' }
@@ -44,3 +45,4 @@ vnoremap	<C-v>	"+p
 set tabstop=2
 set shiftwidth=2
 syntax on
+set backspace=2 " Makes backspace work like most apps

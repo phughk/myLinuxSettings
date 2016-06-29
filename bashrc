@@ -11,5 +11,4 @@ export PS1='$RED$(echo $(dirname \w)|sed -e "s;\(/..\)[^/]*;\1;g")/$(basename \w
 ## Aliases
 alias grep="grep --colour=always"
 alias less="less -R"
-alias megarestart="echo sit tight, killing docker containers && docker-killall; mvn clean install -DkeepContainersRunning=true"
 alias sl="ls"

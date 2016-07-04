@@ -1,5 +1,11 @@
-# Install Java
-# Install Clojure
-wget "https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein"
-chmod +x lein
-./lein
+#!/bin/sh
+
+# Attach bashrc
+echo "### EDITED" >> ~/.bashrc
+echo "source $(pwd)/bashrc" >> ~/.bashrc
+
+# Attach vimrc
+echo "so $(pwd)/vimrc" >> ~/.vimrc
+
+# Attach tmux
+echo "source-file $(pwd)/tmux.conf" >> ~/.tmux.conf

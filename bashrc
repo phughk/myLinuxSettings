@@ -14,3 +14,8 @@ alias grep="grep --colour=always"
 alias less="less -R"
 alias sl="ls"
 alias vimdiff="vim -d"
+
+## Replace bash session with tmux (tmux autostart)
+if [[ ! $TERM =~ screen ]]; then
+	exec tmux
+fi

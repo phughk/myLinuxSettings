@@ -15,6 +15,9 @@ alias less="less -R"
 alias sl="ls"
 alias vimdiff="vim -d"
 
+## Update tmux git bar
+~/.tmux-gitbar/update-gitbar
+
 ## Replace bash session with tmux (tmux autostart)
 if [[ ! $TERM =~ screen ]]; then
 	exec tmux

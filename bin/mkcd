@@ -1,0 +1,4 @@
+#!/bin/sh
+DIR="$*"
+mkdir $DIR
+cd $DIR

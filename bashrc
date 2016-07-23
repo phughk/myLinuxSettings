@@ -1,7 +1,5 @@
 ## Additional env configuration
-export PATH=$PATH:/home/hugh/opt/bin
 export GIT_EDITOR=vim
-export DOCKER_IP=127.0.0.1
 export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64/"
 
 ## Prompt
@@ -14,6 +12,10 @@ alias grep="grep --colour=always"
 alias less="less -R"
 alias sl="ls"
 alias vimdiff="vim -d"
+
+## Aliases for tools (scripts that need to be sourced)
+alias mkcd="source $(which mkcd)"
+alias cdls="source $(which cdls)"
 
 ## Update tmux git bar
 ~/.tmux-gitbar/update-gitbar

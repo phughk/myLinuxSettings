@@ -49,3 +49,4 @@ set tabstop=2
 set shiftwidth=2
 syntax on
 set backspace=2 " Makes backspace work like most apps
+set number

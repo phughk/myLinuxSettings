@@ -26,6 +26,7 @@ NeoBundle 'scrooloose/nerdcommenter'
 NeoBundle 'Shougo/vimshell', { 'rev' : '3787e5' }
 NeoBundle 'Shougo/vimproc.vim', {'build' : {'linux' : 'make'}}
 NeoBundle 'Quramy/tsuquyomi'
+NeoBundle 'airblade/vim-gitgutter'
 
 " Required:
 call neobundle#end()

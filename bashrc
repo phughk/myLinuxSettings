@@ -22,5 +22,5 @@ alias cdls="source $(which cdls)"
 
 ## Replace bash session with tmux (tmux autostart)
 if [[ ! $TERM =~ screen ]]; then
-	exec tmux
+	exec tmux attach
 fi

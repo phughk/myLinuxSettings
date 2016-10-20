@@ -28,6 +28,8 @@ NeoBundle 'Shougo/vimproc.vim', {'build' : {'linux' : 'make'}}
 NeoBundle 'Quramy/tsuquyomi'
 NeoBundle 'airblade/vim-gitgutter'
 NeoBundle 'sukima/xmledit'
+NeoBundle 'git@github.com:lukerandall/haskellmode-vim.git'
+NeoBundle 'rust-lang/rust.vim'
 
 " Required:
 call neobundle#end()
@@ -52,3 +54,6 @@ set shiftwidth=2
 syntax on
 set backspace=2 " Makes backspace work like most apps
 set number
+
+" Settings for haskell
+let g:haddock_browser = "/usr/bin/firefox"

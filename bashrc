@@ -1,6 +1,7 @@
 ## Additional env configuration
 export GIT_EDITOR=vim
 export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64/"
+export HISTTIMEFORMAT="%d/%m/%y %T "
 
 ## Prompt
 RED=$(tput setaf 1)

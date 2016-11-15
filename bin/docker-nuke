@@ -1,0 +1,2 @@
+#!/bin/sh
+docker ps -a --format "{{.ID}}" | xargs docker rm -f

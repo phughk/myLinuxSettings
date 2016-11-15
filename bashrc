@@ -18,6 +18,12 @@ alias vimdiff="vim -d"
 alias mkcd="source $(which mkcd)"
 alias cdls="source $(which cdls)"
 
+## Functions that work like aliases
+#docker() {
+	#if [[$1 == "attach"]]; then
+		#command docker attach --sig-proxy=true 
+#}
+
 ## Update tmux git bar
 ~/.tmux-gitbar/update-gitbar
 

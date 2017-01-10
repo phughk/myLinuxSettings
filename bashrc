@@ -2,6 +2,7 @@
 export GIT_EDITOR=vim
 export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64/"
 export HISTTIMEFORMAT="%d/%m/%y %T "
+export PATH=$(pwd)/bin:$PATH
 
 ## Prompt
 RED="$(tput setaf 1)"

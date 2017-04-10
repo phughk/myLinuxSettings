@@ -19,6 +19,9 @@ alias vimdiff="vim -d"
 alias mkcd="source $(which mkcd)"
 alias cdls="source $(which cdls)"
 
+binDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export PATH=$binDir/bin:$PATH
+
 ## Functions that work like aliases
 #docker() {
 	#if [[$1 == "attach"]]; then

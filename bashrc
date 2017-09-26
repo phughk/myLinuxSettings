@@ -30,6 +30,7 @@ export PATH=$binDir/bin:$PATH
 
 ## Update tmux git bar
 ~/.tmux-gitbar/update-gitbar
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 ## Replace bash session with tmux (tmux autostart)
 if [[ ! $TERM =~ screen ]]; then

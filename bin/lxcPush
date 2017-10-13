@@ -1,0 +1,4 @@
+#!/bin/sh
+filename=$1
+container=$2
+lxc file push $filename $container/root/$filename

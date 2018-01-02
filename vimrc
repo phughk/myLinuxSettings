@@ -31,6 +31,7 @@ NeoBundle 'sukima/xmledit'
 NeoBundle 'git@github.com:lukerandall/haskellmode-vim.git'
 NeoBundle 'rust-lang/rust.vim'
 NeoBundle 'racer-rust/vim-racer'
+NeoBundle 'godlygeek/tabular'
 
 " Required:
 call neobundle#end()

@@ -1,16 +1,28 @@
-#!/bin/sh
+#!/usr/bin/python3
+import glob, os, re
 
-cp enterprise/neo4j-enterprise/target/neo4j-enterprise*-NOTICE.txt enterprise/neo4j-enterprise/NOTICE.txt
-cp enterprise/neo4j-enterprise/target/neo4j-enterprise*-LICENSES.txt enterprise/neo4j-enterprise/LICENSES.txt
-cp enterprise/cypher/physical-planning/target/neo4j-cypher-physical-planning-*-SNAPSHOT-NOTICE.txt enterprise/cypher/physical-planning/NOTICE.txt
-cp enterprise/cypher/physical-planning/target/neo4j-cypher-physical-planning-*-SNAPSHOT-LICENSES.txt enterprise/cypher/physical-planning/LICENSES.txt
-cp enterprise/cypher/slotted-runtime/target/neo4j-cypher-slotted-runtime-*-SNAPSHOT-NOTICE.txt enterprise/cypher/slotted-runtime/NOTICE.txt
-cp enterprise/cypher/slotted-runtime/target/neo4j-cypher-slotted-runtime-*-SNAPSHOT-LICENSES.txt enterprise/cypher/slotted-runtime/LICENSES.txt
-cp enterprise/cypher/cypher/target/neo4j-enterprise-cypher-*-SNAPSHOT-NOTICE.txt enterprise/cypher/cypher/NOTICE.txt
-cp enterprise/cypher/cypher/target/neo4j-enterprise-cypher-*-SNAPSHOT-LICENSES.txt enterprise/cypher/cypher/LICENSES.txt
-cp enterprise/server-enterprise/target/neo4j-server-enterprise-*-SNAPSHOT-NOTICE.txt enterprise/server-enterprise/NOTICE.txt
-cp enterprise/server-enterprise/target/neo4j-server-enterprise-*-SNAPSHOT-LICENSES.txt enterprise/server-enterprise/LICENSES.txt
-cp enterprise/neo4j-harness-enterprise/target/neo4j-harness-enterprise-*-SNAPSHOT-NOTICE.txt enterprise/neo4j-harness-enterprise/NOTICE.txt
-cp enterprise/neo4j-harness-enterprise/target/neo4j-harness-enterprise-*-SNAPSHOT-LICENSES.txt enterprise/neo4j-harness-enterprise/LICENSES.txt
-cp packaging/standalone/standalone-community/target/neo4j-community-standalone-*-SNAPSHOT-NOTICE-win.txt packaging/standalone/standalone-community/src/main/distribution/text/community/NOTICE.txt
-cp packaging/standalone/standalone-community/target/neo4j-community-standalone-*-SNAPSHOT-LICENSES-win.txt packaging/standalone/standalone-community/src/main/distribution/text/community/LICENSES.txt
+# Use use grep to filter per module
+
+listOfSnapshotNoticeFiles = glob.glob("**/target/*-SNAPSHOT-NOTICE.txt", recursive=True)
+listOfSnapshotLicenseFiles = glob.glob("**/target/*-SNAPSHOT-LICENSES.txt", recursive=True)
+
+def findOriginal(snapshot):
+    directory, filename = os.path.split(snapshot)
+    regexMatch = re.match(".+-(.+\\.txt)", filename)
+    originalFilename = regexMatch.group(1)
+    originalDirectory = os.path.join(directory, "..")
+    # return "Directory %s, filename %s\norgDir: %s, orgFile: %s" % (directory, filename, originalDirectory, originalFilename)
+    return os.path.join(originalDirectory, originalFilename)
+
+def move(pairing):
+    return "mv %s %s" % (pairing)
+
+print("#Notice files:")
+for f in listOfSnapshotNoticeFiles:
+    print(move((f, findOriginal(f))))
+
+print("")
+print("#License files:")
+for f in listOfSnapshotLicenseFiles:
+    print(move((f, findOriginal(f))))
+

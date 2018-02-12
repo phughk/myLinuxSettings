@@ -33,8 +33,14 @@ NeoBundle 'rust-lang/rust.vim'
 NeoBundle 'racer-rust/vim-racer'
 NeoBundle 'godlygeek/tabular'
 
+
+NeoBundle 'google/vim-maktaba'
+NeoBundle 'google/vim-codefmt'
+NeoBundle 'google/vim-glaive'
+
 " Required:
 call neobundle#end()
+call glaive#Install()
 
 " Required:
 filetype plugin indent on

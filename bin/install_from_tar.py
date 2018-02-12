@@ -141,6 +141,12 @@ def setupEncryption():
     # installSslToAll(installs, basename)
 
 
+def useDefaultCreds(installs):
+    for install in installs:
+        cmd = os.path.join(install, "bin/neo4j-admin")
+        run(cmd+" set-initial-password neo4j")
+
+
 tarFile = sys.argv[1]
 safeExtract(tarFile, "cluster-core1")
 safeExtract(tarFile, "cluster-core2")
@@ -165,4 +171,11 @@ modifyConfigAllSetPorts(
 modifyConfigAllSetPorts(
     installs, 'dbms.connector.bolt.listen_address', '0.0.0.0:', 7687)
 modifyConfigAll(installs, 'dbms.connector.https.enabled', 'false')
-setupEncryption()
+
+modifyConfig(installs[0], 'causal_clustering.refuse_to_be_leader', 'true')
+modifyConfigAll(installs, "causal_clustering.multi_dc_license", "true")
+modifyConfigAll(installs, "causal_clustering.enable_pre_voting", "true")
+modifyConfigAll(installs, "dbms.tx_log.rotation.size", "1024k")
+# setupEncryption()
+
+useDefaultCreds(installs)

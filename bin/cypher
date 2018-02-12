@@ -1,0 +1,54 @@
+#!/usr/bin/python
+import os
+import sys
+from neo4j.v1 import GraphDatabase
+
+
+def optional(value, default):
+    if value == None:
+        return default
+    return value
+
+
+def latestTx(session):
+    def anyTx(tx):
+        tx.run("RETURN COUNT(*)")
+    session.write_transaction(anyTx)
+    print session.last_bookmark()
+
+
+def makeTx(session):
+    """
+    argv[2] = times, default 1
+    """
+    def createNodePair(tx):
+        tx.run("CREATE (p:Person)-[:KNOWS]->(q:Person)")
+
+    times = int(optional(sys.argv[2], 1))
+    for i in range(0, times):
+        if i % 1000 == 0:
+            sys.stderr.write("Completed %d of %d transactions\n" % (i, times))
+        session.write_transaction(createNodePair)
+
+
+def countNodes(session):
+    def countNode(tx):
+        for record in tx.run("MATCH (a) RETURN COUNT(a)"):
+            print record[0]
+    session.write_transaction(countNode)
+
+
+COMMANDS = {}
+COMMANDS["latestTx"] = latestTx
+COMMANDS["makeTx"] = makeTx
+COMMANDS["countNodes"] = countNodes
+
+# /db/data ?
+cmd = sys.argv[1]
+if not COMMANDS.has_key(cmd):
+    raise ValueError("Command %s doesn't match %s" % (cmd, COMMANDS.keys()))
+
+driver = GraphDatabase.driver(
+    "bolt+routing://localhost:7689", auth=("neo4j", "neo4j"))
+session = driver.session()
+COMMANDS[cmd](session)

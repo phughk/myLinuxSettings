@@ -88,38 +88,53 @@ def modifyConfigAllSetPorts(installls, configKey, baseValue, basePort):
         offset += 1
 
 
-def createSslKey(basename):
-    if os.path.exists(basename+'.key') or os.path.exists(basename+'.csr'):
-        # no need to generate
-        return
-    run("openssl req -newkey rsa:2048 -nodes -keyout %s.key -out %s.csr" %
-        (basename, basename))
-
-
 def installSslToAll(installs, basename):
     baseKey = basename+'.key'
     baseCert = basename+'.csr'
     policyName = 'cluster'
-    for install in installs:
+    for index in range(0, len(installs)):
+        install = installs[index]
         certsPath = os.path.join(install, 'certificates', policyName)
-        run('cp %s %s' % (baseKey, certsPath))
-        run('mv %s %s' % (os.path.join(certsPath, baseKey),
-                          os.path.join(certsPath, 'private.key')))
-        run('cp %s %s' % (baseCert, certsPath))
-        run('mv %s %s' % (os.path.join(certsPath, baseCert),
-                          os.path.join(certsPath, 'public.crt')))
-        run('cp %s %s' % (os.path.join(certsPath, 'public.crt'),
-                          os.path.join(certsPath, 'trusted', 'self.crt')))
+
+        privateKey = os.path.join(certsPath, "private.key")
+        publicKey = os.path.join(certsPath, "public.crt")
+        # Create the keys with public already in trusted directory
+        createSslKeyPair(privateKey, publicKey)
+        # Copy trusted public key to other installs
+        for targetInstall in installs:
+            dstKeyName = "public."+str(index)+".crt"
+            if targetInstall != install:
+                targetPath = os.path.join(
+                    targetInstall, "certificates", policyName, "trusted", dstKeyName )
+                print "TARGET PATH IS: "+targetPath
+                run("cp %s %s" % (publicKey, targetPath))
 
 
 def createSslPathsAll(installs, policyName):
     for install in installs:
-        os.makedirs(os.path.join(
-            install, 'certificates', policyName, 'trusted'))
+        allowed = os.path.join(install, 'certificates', policyName, 'trusted')
+        revoked = os.path.join(install, "certificates", policyName, "revoked")
+        os.makedirs(allowed)
+        os.makedirs(revoked)
+
+
+def createSslKeyPair(privateKey, publicKey):
+    COUNTRY = "UK"
+    STATE = "London"
+    LOCATION = "London"
+    ORG = "Neo4j"
+    UNIT = "Backup Orgnisation Unit"
+    COMMON = "localhost"
+    SETUP = "/C=%s/ST=%s/L=%s/O=%s/OU=%s/CN=%s" % (
+        COUNTRY, STATE, LOCATION, ORG, UNIT, COMMON)
+
+    cmd = "openssl req -newkey rsa:4096 -nodes -sha512 -x509 -days 3650 -nodes -out %s -keyout %s -subj \"%s\"" % (
+        publicKey, privateKey, SETUP)
+    print "Command is: "+cmd
+    run(cmd)
 
 
 def setupEncryption():
-    modifyConfigAll(installs, 'dbms.connector.bolt.tls_level', 'REQUIRED')
     modifyConfigAll(
         installs, 'dbms.ssl.policy.cluster.base_directory', 'certificates/cluster')
     modifyConfigAll(installs, 'dbms.ssl.policy.cluster.client_auth', "REQUIRE")
@@ -129,16 +144,13 @@ def setupEncryption():
                     'TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA')
     modifyConfigAll(installs, 'causal_clustering.ssl_policy', 'cluster')
     modifyConfigAll(
-        installs, 'dbms.ssl.policy.cluster.allow_key_generation', 'true')
+        installs, 'dbms.ssl.policy.cluster.allow_key_generation', 'false')
     modifyConfigAll(installs, 'dbms.ssl.policy.cluster.trust_all', 'false')
 
     # Now create ssl to match expected locations
     basename = 'cluster_key'
-    createSslPathsAll([installs[0]], 'cluster')
-    createSslKey(basename)
-    run('ln -s ../cluster-core1/certificates cluster-core2/')
-    run('ln -s ../cluster-core1/certificates cluster-core3/')
-    # installSslToAll(installs, basename)
+    createSslPathsAll(installs, 'cluster')
+    installSslToAll(installs, basename)
 
 
 def useDefaultCreds(installs):
@@ -169,13 +181,15 @@ modifyConfigAllSetPorts(
 modifyConfigAllSetPorts(
     installs, 'dbms.connector.http.listen_address', '0.0.0.0:', 7474)
 modifyConfigAllSetPorts(
+    installs, 'dbms.connector.https.listen_address', '0.0.0.0:', 7478)
+modifyConfigAllSetPorts(
     installs, 'dbms.connector.bolt.listen_address', '0.0.0.0:', 7687)
-modifyConfigAll(installs, 'dbms.connector.https.enabled', 'false')
+modifyConfigAll(installs, 'dbms.connector.https.enabled', 'true')
 
-modifyConfig(installs[0], 'causal_clustering.refuse_to_be_leader', 'true')
-modifyConfigAll(installs, "causal_clustering.multi_dc_license", "true")
-modifyConfigAll(installs, "causal_clustering.enable_pre_voting", "true")
-modifyConfigAll(installs, "dbms.tx_log.rotation.size", "1024k")
-# setupEncryption()
+# modifyConfig(installs[0], 'causal_clustering.refuse_to_be_leader', 'true')
+# modifyConfigAll(installs, "causal_clustering.multi_dc_license", "true")
+# modifyConfigAll(installs, "causal_clustering.enable_pre_voting", "true")
+# modifyConfigAll(installs, "dbms.tx_log.rotation.size", "1024k")
+setupEncryption()
 
 useDefaultCreds(installs)

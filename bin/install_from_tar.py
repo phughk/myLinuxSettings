@@ -89,8 +89,6 @@ def modifyConfigAllSetPorts(installls, configKey, baseValue, basePort):
 
 
 def installSslToAll(installs, basename):
-    baseKey = basename+'.key'
-    baseCert = basename+'.csr'
     policyName = 'cluster'
     for index in range(0, len(installs)):
         install = installs[index]
@@ -103,11 +101,9 @@ def installSslToAll(installs, basename):
         # Copy trusted public key to other installs
         for targetInstall in installs:
             dstKeyName = "public."+str(index)+".crt"
-            if targetInstall != install:
-                targetPath = os.path.join(
-                    targetInstall, "certificates", policyName, "trusted", dstKeyName )
-                print "TARGET PATH IS: "+targetPath
-                run("cp %s %s" % (publicKey, targetPath))
+            targetPath = os.path.join( targetInstall, "certificates", policyName, "trusted", dstKeyName )
+            print "TARGET PATH IS: "+targetPath
+            run("cp %s %s" % (publicKey, targetPath))
 
 
 def createSslPathsAll(installs, policyName):
@@ -124,7 +120,7 @@ def createSslKeyPair(privateKey, publicKey):
     LOCATION = "London"
     ORG = "Neo4j"
     UNIT = "Backup Orgnisation Unit"
-    COMMON = "localhost"
+    COMMON = "127.0.0.1"
     SETUP = "/C=%s/ST=%s/L=%s/O=%s/OU=%s/CN=%s" % (
         COUNTRY, STATE, LOCATION, ORG, UNIT, COMMON)
 
@@ -190,6 +186,6 @@ modifyConfigAll(installs, 'dbms.connector.https.enabled', 'true')
 # modifyConfigAll(installs, "causal_clustering.multi_dc_license", "true")
 # modifyConfigAll(installs, "causal_clustering.enable_pre_voting", "true")
 # modifyConfigAll(installs, "dbms.tx_log.rotation.size", "1024k")
-setupEncryption()
+# setupEncryption()
 
 useDefaultCreds(installs)

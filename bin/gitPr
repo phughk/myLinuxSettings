@@ -1,0 +1,7 @@
+#!/bin/sh
+
+ID=$1
+BRANCHNAME=${2:-pullRequest-$ID}
+REPO=${3:-neo4j}
+git fetch $REPO pull/$ID/head:$BRANCHNAME
+

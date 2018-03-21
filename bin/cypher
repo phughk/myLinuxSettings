@@ -10,6 +10,13 @@ def optional(value, default):
     return value
 
 
+def get(arr, index):
+    try:
+        return arr[index]
+    except IndexError:
+        return None
+
+
 def latestTx(session):
     def anyTx(tx):
         tx.run("RETURN COUNT(*)")
@@ -24,7 +31,7 @@ def makeTx(session):
     def createNodePair(tx):
         tx.run("CREATE (p:Person)-[:KNOWS]->(q:Person)")
 
-    times = int(optional(sys.argv[2], 1))
+    times = int(optional(get(sys.argv, 2), 1))
     for i in range(0, times):
         if i % 1000 == 0:
             sys.stderr.write("Completed %d of %d transactions\n" % (i, times))

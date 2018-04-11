@@ -101,7 +101,8 @@ def installSslToAll(installs, basename):
         # Copy trusted public key to other installs
         for targetInstall in installs:
             dstKeyName = "public."+str(index)+".crt"
-            targetPath = os.path.join( targetInstall, "certificates", policyName, "trusted", dstKeyName )
+            targetPath = os.path.join(
+                targetInstall, "certificates", policyName, "trusted", dstKeyName)
             print "TARGET PATH IS: "+targetPath
             run("cp %s %s" % (publicKey, targetPath))
 
@@ -131,17 +132,19 @@ def createSslKeyPair(privateKey, publicKey):
 
 
 def setupEncryption():
+    policyName = "cluster-policy"
+    basePolicySetting = "dbms.ssl.policy."+policyName
+    modifyConfigAll(installs, 'causal_clustering.ssl_policy', policyName)
     modifyConfigAll(
-        installs, 'dbms.ssl.policy.cluster.base_directory', 'certificates/cluster')
-    modifyConfigAll(installs, 'dbms.ssl.policy.cluster.client_auth', "REQUIRE")
+        installs, basePolicySetting+'.base_directory', 'certificates/'+policyName)
+    modifyConfigAll(installs, basePolicySetting+'.client_auth', "REQUIRE")
     modifyConfigAll(
-        installs, 'dbms.ssl.policy.cluster.tls_versions', 'TLSv1.2')
-    modifyConfigAll(installs, 'dbms.ssl.policy.cluster.ciphers',
+        installs, basePolicySetting+'.tls_versions', 'TLSv1.2')
+    modifyConfigAll(installs, basePolicySetting+'.ciphers',
                     'TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA')
-    modifyConfigAll(installs, 'causal_clustering.ssl_policy', 'cluster')
     modifyConfigAll(
-        installs, 'dbms.ssl.policy.cluster.allow_key_generation', 'false')
-    modifyConfigAll(installs, 'dbms.ssl.policy.cluster.trust_all', 'false')
+        installs, basePolicySetting+'.allow_key_generation', 'false')
+    modifyConfigAll(installs, basePolicySetting+'.trust_all', 'false')
 
     # Now create ssl to match expected locations
     basename = 'cluster_key'
@@ -155,37 +158,42 @@ def useDefaultCreds(installs):
         run(cmd+" set-initial-password neo4j")
 
 
+def enableClusters(installs):
+    modifyConfigAll(installs, "dbms.mode", "CORE")
+    modifyConfigAll(
+        installs, "causal_clustering.expected_core_cluster_size", len(installs))
+    modifyConfigAll(installs, "causal_clustering.initial_discovery_members",
+                    "localhost:5000,localhost:5001,localhost:5002")
+    modifyConfigAllSetPorts(
+        installs, 'causal_clustering.discovery_listen_address', '0.0.0.0:', 5000)
+    modifyConfigAllSetPorts(
+        installs, 'causal_clustering.transaction_listen_address', '0.0.0.0:', 6000)
+    modifyConfigAllSetPorts(
+        installs, 'causal_clustering.raft_listen_address', '0.0.0.0:', 7000)
+
+
 tarFile = sys.argv[1]
 safeExtract(tarFile, "cluster-core1")
 safeExtract(tarFile, "cluster-core2")
 safeExtract(tarFile, "cluster-core3")
 installs = ["cluster-core1", "cluster-core2", "cluster-core3"]
-
-# modifyAllConfig(installs, "dbms.backup.enabled", "false")
-modifyConfigAll(installs, "dbms.mode", "CORE")
-modifyConfigAll(
-    installs, "causal_clustering.expected_core_cluster_size", len(installs))
-modifyConfigAll(installs, "causal_clustering.initial_discovery_members",
-                "localhost:5000,localhost:5001,localhost:5002")
-
 modifyConfigAllSetPorts(
-    installs, 'causal_clustering.discovery_listen_address', '0.0.0.0:', 5000)
-modifyConfigAllSetPorts(
-    installs, 'causal_clustering.transaction_listen_address', '0.0.0.0:', 6000)
-modifyConfigAllSetPorts(
-    installs, 'causal_clustering.raft_listen_address', '0.0.0.0:', 7000)
+    installs, 'dbms.connector.bolt.listen_address', '0.0.0.0:', 7687)
 modifyConfigAllSetPorts(
     installs, 'dbms.connector.http.listen_address', '0.0.0.0:', 7474)
 modifyConfigAllSetPorts(
     installs, 'dbms.connector.https.listen_address', '0.0.0.0:', 7478)
+enableClusters(installs)
+
+# modifyAllConfig(installs, "dbms.backup.enabled", "false")
 modifyConfigAllSetPorts(
-    installs, 'dbms.connector.bolt.listen_address', '0.0.0.0:', 7687)
+    installs, 'dbms.backup.address', '0.0.0.0:', 6362)
 modifyConfigAll(installs, 'dbms.connector.https.enabled', 'true')
 
 # modifyConfig(installs[0], 'causal_clustering.refuse_to_be_leader', 'true')
 # modifyConfigAll(installs, "causal_clustering.multi_dc_license", "true")
 # modifyConfigAll(installs, "causal_clustering.enable_pre_voting", "true")
 # modifyConfigAll(installs, "dbms.tx_log.rotation.size", "1024k")
-# setupEncryption()
+setupEncryption()
 
 useDefaultCreds(installs)

@@ -1,0 +1,28 @@
+#!/usr/bin/python
+
+import os, sys
+left = sys.argv[1]
+right = sys.argv[2]
+
+leftFiles = os.listdir(left)
+rightFiles = os.listdir(right)
+
+inLeft = []
+inRight = []
+
+for leftFile in leftFiles:
+    if leftFile not in rightFiles:
+        inLeft.append(leftFile)
+
+for rightFile in rightFiles:
+    if rightFile not in leftFiles:
+        inRight.append(rightFile)
+
+print len(leftFiles), "in left"
+print len(rightFiles), "in right"
+
+for left in inLeft:
+    print "-", left
+for right in inRight:
+    print "+", right
+

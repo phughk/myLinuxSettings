@@ -9,10 +9,13 @@ rightFiles = os.listdir(right)
 
 inLeft = []
 inRight = []
+both = []
 
 for leftFile in leftFiles:
     if leftFile not in rightFiles:
         inLeft.append(leftFile)
+    else:
+        both.append(leftFile)
 
 for rightFile in rightFiles:
     if rightFile not in leftFiles:
@@ -26,3 +29,6 @@ for left in inLeft:
 for right in inRight:
     print "+", right
 
+print
+for f in both:
+    print "~", f

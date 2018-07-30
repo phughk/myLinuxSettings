@@ -12,17 +12,22 @@ def findOriginal(snapshot):
     originalFilename = regexMatch.group(1)
     originalDirectory = os.path.join(directory, "..")
     # return "Directory %s, filename %s\norgDir: %s, orgFile: %s" % (directory, filename, originalDirectory, originalFilename)
+    # If original does not exist, then don't copy
     return os.path.join(originalDirectory, originalFilename)
 
 def move(pairing):
-    return "mv %s %s" % (pairing)
+    return "cp %s %s" % (pairing)
 
 print("#Notice files:")
 for f in listOfSnapshotNoticeFiles:
-    print(move((f, findOriginal(f))))
+    original = findOriginal(f)
+    if os.path.exists(original):
+        print(move((f, original)))
 
 print("")
 print("#License files:")
 for f in listOfSnapshotLicenseFiles:
-    print(move((f, findOriginal(f))))
+    original = findOriginal(f)
+    if os.path.exists(original):
+        print(move((f, original)))
 

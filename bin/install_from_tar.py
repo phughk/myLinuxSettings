@@ -132,7 +132,7 @@ def createSslKeyPair(privateKey, publicKey):
 
 
 def setupEncryption():
-    policyName = "cluster-policy"
+    policyName = "cluster"
     basePolicySetting = "dbms.ssl.policy."+policyName
     modifyConfigAll(installs, 'causal_clustering.ssl_policy', policyName)
     modifyConfigAll(
@@ -189,11 +189,13 @@ enableClusters(installs)
 modifyConfigAllSetPorts(
     installs, 'dbms.backup.address', '0.0.0.0:', 6362)
 modifyConfigAll(installs, 'dbms.connector.https.enabled', 'true')
+modifyConfigAll(installs, 'causal_clustering.raft_messages_log_enable', 'true')
+modifyConfigAll(installs, 'dbms.logs.debug.level', 'DEBUG')
 
 # modifyConfig(installs[0], 'causal_clustering.refuse_to_be_leader', 'true')
 # modifyConfigAll(installs, "causal_clustering.multi_dc_license", "true")
 # modifyConfigAll(installs, "causal_clustering.enable_pre_voting", "true")
 # modifyConfigAll(installs, "dbms.tx_log.rotation.size", "1024k")
-setupEncryption()
+# setupEncryption()
 
 useDefaultCreds(installs)

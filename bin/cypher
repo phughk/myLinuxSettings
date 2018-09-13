@@ -18,6 +18,10 @@ def get(arr, index):
 
 
 def latestTx(session):
+    """
+    No args
+    Returns the latests transaction on the connected db (using bookmarks)
+    """
     def anyTx(tx):
         tx.run("RETURN COUNT(*)")
     session.write_transaction(anyTx)
@@ -27,6 +31,7 @@ def latestTx(session):
 def makeTx(session):
     """
     argv[2] = times, default 1
+    Creates a transaction (Person)-KNOWS->(Person)
     """
     def createNodePair(tx):
         tx.run("CREATE (p:Person)-[:KNOWS]->(q:Person)")
@@ -39,23 +44,44 @@ def makeTx(session):
 
 
 def countNodes(session):
+    """
+    No args
+    Counts all the nodes in the database
+    """
     def countNode(tx):
         for record in tx.run("MATCH (a) RETURN COUNT(a)"):
             print record[0]
     session.write_transaction(countNode)
-
 
 COMMANDS = {}
 COMMANDS["latestTx"] = latestTx
 COMMANDS["makeTx"] = makeTx
 COMMANDS["countNodes"] = countNodes
 
+LOGIN = os.getenv("cypher_login", "neo4j")
+PASSWORD = os.getenv("cypher_passwd", "neo4j")
+ADDRESS = os.getenv("cypher_addr", "localhost:7687")
+PROTOCOL = os.getenv("cypher_proto", "bolt+routing")
+
 # /db/data ?
-cmd = sys.argv[1]
+if len(sys.argv)<2:
+    cmd = "--help"
+else:
+    cmd = sys.argv[1]
+if cmd in ["--help", "help", "-h"]:
+    print "Override address and credentials with cypher_ login, passwd, proto, and addr"
+    print "Will use %s:%s@%s://%s" % (LOGIN, PASSWORD, PROTOCOL, ADDRESS)
+    print
+    for cmdName in COMMANDS.keys():
+        print cmdName
+        print COMMANDS[cmdName].__doc__
+        print
+    exit(0)
+
 if not COMMANDS.has_key(cmd):
     raise ValueError("Command %s doesn't match %s" % (cmd, COMMANDS.keys()))
 
 driver = GraphDatabase.driver(
-    "bolt+routing://localhost:7689", auth=("neo4j", "neo4j"))
+    PROTOCOL+"://"+ADDRESS, auth=(LOGIN, PASSWORD))
 session = driver.session()
 COMMANDS[cmd](session)

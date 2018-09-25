@@ -1,4 +1,12 @@
 #!/bin/sh
+if [ $# -eq 0 ]
+then
+	echo "No arguments supplied"
+	echo "{0} = ID"
+	echo "{1} = BRANCHNAME (default 'pullRequest-{ID}'"
+	echo "{2} = REPO (default 'neo4j')"
+	exit 0
+fi
 
 ID=$1
 BRANCHNAME=${2:-pullRequest-$ID}

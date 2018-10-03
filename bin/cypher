@@ -38,7 +38,8 @@ def makeTx(session):
     QUERY = "UNWIND $batch AS b CREATE (p:Person)-[:KNOWS]->(q:Person)"
 
     times = int(optional(get(sys.argv, 2), 1))
-    batchSize = min(times / 10, 100)
+    divisor = 1 if times < 10 else 10
+    batchSize = min(times / divisor, 100)
     numberOfBatches = times / batchSize
     sys.stderr.write(
         "Creating %d batches of size %d totalling %d node-node pairs\n" %
@@ -61,6 +62,7 @@ def countNodes(session):
             print record[0]
 
     session.write_transaction(countNode)
+
 
 def wipe(session):
     """

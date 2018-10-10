@@ -33,13 +33,15 @@ def latestTx(session):
 def makeTx(session):
     """
     argv[2] = times, default 1
+    argv[3] = batch size (deafult = times/10)
     Creates a transaction (Person)-KNOWS->(Person)
     """
     QUERY = "UNWIND $batch AS b CREATE (p:Person)-[:KNOWS]->(q:Person)"
 
     times = int(optional(get(sys.argv, 2), 1))
     divisor = 1 if times < 10 else 10
-    batchSize = min(times / divisor, 100)
+    calculatedBatchSize = min(times / divisor, 100)
+    batchSize = int(optional(get(sys.argv, 3), calculatedBatchSize))
     numberOfBatches = times / batchSize
     sys.stderr.write(
         "Creating %d batches of size %d totalling %d node-node pairs\n" %

@@ -1,5 +1,3 @@
 #/bin/sh
 
-./cluster-core1/bin/neo4j stop
-./cluster-core2/bin/neo4j stop
-./cluster-core3/bin/neo4j stop
+find . -path "**/bin/neo4j" | xargs -I {} sh -c "{} stop"

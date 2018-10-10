@@ -1,3 +1,3 @@
 #!/bin/sh
 
-tail -f cluster-core*/logs/neo4j.log
+find . -path "**/logs/neo4j.log" | xargs tail -f

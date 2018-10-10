@@ -1,0 +1,3 @@
+#!/bin/sh
+
+allNodeWebAddresses | clusterStatus | jq -C '.' | less -R

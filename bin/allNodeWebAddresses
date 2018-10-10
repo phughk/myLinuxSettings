@@ -1,0 +1,5 @@
+#!/bin/sh
+
+find . -path "**/logs/debug.log"\
+			| xargs grep "dbms.connector.http.listen_address"\
+			| sed -rn 's/.+=(.+)/\1/p'

@@ -159,43 +159,59 @@ def useDefaultCreds(installs):
 
 
 def enableClusters(installs):
-    modifyConfigAll(installs, "dbms.mode", "CORE")
+    DISCOVERY_START = 5000
+    TRANSACTION_START = 6000
+    RAFT_START = 7000
+    cores = filter(lambda x: x.find("core") > -1, installs)
+    replicas = filter(lambda x: x.find("replica") > -1, installs)
+    modifyConfigAll(cores, "dbms.mode", "CORE")
+    modifyConfigAll(replicas, "dbms.mode", "READ_REPLICA")
     modifyConfigAll(
-        installs, "causal_clustering.expected_core_cluster_size", len(installs))
+        installs, "causal_clustering.expected_core_cluster_size", len(cores))
     modifyConfigAll(installs, "causal_clustering.initial_discovery_members",
                     "localhost:5000,localhost:5001,localhost:5002")
     modifyConfigAllSetPorts(
-        installs, 'causal_clustering.discovery_listen_address', '0.0.0.0:', 5000)
+        installs, 'causal_clustering.discovery_listen_address', '0.0.0.0:', DISCOVERY_START)
     modifyConfigAllSetPorts(
-        installs, 'causal_clustering.transaction_listen_address', '0.0.0.0:', 6000)
+        installs, 'causal_clustering.transaction_listen_address', '0.0.0.0:', TRANSACTION_START)
     modifyConfigAllSetPorts(
-        installs, 'causal_clustering.raft_listen_address', '0.0.0.0:', 7000)
+        installs, 'causal_clustering.raft_listen_address', '0.0.0.0:', RAFT_START)
 
+
+BOLT_START = 7697
+HTTP_START = 7474
+HTTPS_START = 7484
+BKUP_START = 6362
 
 tarFile = sys.argv[1]
-safeExtract(tarFile, "cluster-core1")
-safeExtract(tarFile, "cluster-core2")
-safeExtract(tarFile, "cluster-core3")
-installs = ["cluster-core1", "cluster-core2", "cluster-core3"]
+installs = ["cluster-core1", "cluster-core2", "cluster-core3",
+            "cluster-replica1", "cluster-replica2", "cluster-replica3"]
+
+for install in installs:
+    safeExtract(tarFile, install)
+
 modifyConfigAllSetPorts(
-    installs, 'dbms.connector.bolt.listen_address', '0.0.0.0:', 7687)
+    installs, 'dbms.connector.bolt.listen_address', '0.0.0.0:', BOLT_START)
 modifyConfigAllSetPorts(
-    installs, 'dbms.connector.http.listen_address', '0.0.0.0:', 7474)
+    installs, 'dbms.connector.http.listen_address', '0.0.0.0:', HTTP_START)
 modifyConfigAllSetPorts(
-    installs, 'dbms.connector.https.listen_address', '0.0.0.0:', 7478)
+    installs, 'dbms.connector.https.listen_address', '0.0.0.0:', HTTPS_START)
 enableClusters(installs)
 
-# modifyAllConfig(installs, "dbms.backup.enabled", "false")
 modifyConfigAllSetPorts(
-    installs, 'dbms.backup.address', '0.0.0.0:', 6362)
+    installs, 'dbms.backup.address', '0.0.0.0:', BKUP_START)
 modifyConfigAll(installs, 'dbms.connector.https.enabled', 'true')
 modifyConfigAll(installs, 'causal_clustering.raft_messages_log_enable', 'true')
 modifyConfigAll(installs, 'dbms.logs.debug.level', 'DEBUG')
+modifyConfigAll(
+    installs, 'dbms.security.causal_clustering_status_auth_enabled', 'false')
+modifyConfigAll(installs, 'dbms.tx_log.rotation.retention_policy', '10 files')
+modifyConfigAll(installs, 'dbms.tx_log.rotation.size', '1M')
+modifyConfigAll(installs, "causal_clustering.multi_dc_license", "true")
+
 
 # modifyConfig(installs[0], 'causal_clustering.refuse_to_be_leader', 'true')
-# modifyConfigAll(installs, "causal_clustering.multi_dc_license", "true")
 # modifyConfigAll(installs, "causal_clustering.enable_pre_voting", "true")
-# modifyConfigAll(installs, "dbms.tx_log.rotation.size", "1024k")
 # setupEncryption()
 
 useDefaultCreds(installs)

@@ -1,4 +1,13 @@
 #!/bin/sh
+
+if [ $# -eq 0 ]
+then
+	echo "No arguments supplied"
+	echo "{0} = filename"
+	echo "{1} = container"
+	exit 0
+fi
+
 filename=$1
 container=$2
 lxc file push $filename $container/root/$filename

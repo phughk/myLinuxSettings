@@ -1,0 +1,18 @@
+#!/bin/sh
+
+NAME=$1
+
+year=`date -u +"%Y"`
+month=`date -u +"%m"`
+day=`date -u +"%d"`
+hour=`date -u +"%H"`
+minute=`date -u +"%M"`
+second=`date -u +"%S"`
+
+filename="$year-$month-$day-$NAME.md"
+
+echo "---" > $filename
+echo "layout: post" >> $filename
+echo "title: $NAME" >> $filename
+echo "date: $year-$month-$day $hour:$minute:$second+0100" >> $filename
+echo "---" >> $filename

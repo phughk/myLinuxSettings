@@ -32,6 +32,7 @@ NeoBundle 'git@github.com:lukerandall/haskellmode-vim.git'
 NeoBundle 'rust-lang/rust.vim'
 NeoBundle 'racer-rust/vim-racer'
 NeoBundle 'godlygeek/tabular'
+NeoBundle 'git@github.com:scrooloose/nerdtree.git'
 
 
 NeoBundle 'google/vim-maktaba'
@@ -65,3 +66,7 @@ set number
 
 " Settings for haskell
 let g:haddock_browser = "/usr/bin/firefox"
+
+" NERDTree auto-panel on `vim`
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif

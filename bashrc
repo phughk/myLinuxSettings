@@ -21,17 +21,16 @@ alias cdls="source $(which cdls)"
 binDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export PATH=$binDir/bin:$PATH
 
-## Functions that work like aliases
-#docker() {
-	#if [[$1 == "attach"]]; then
-		#command docker attach --sig-proxy=true 
-#}
 
 ## Update tmux git bar
-~/.tmux-gitbar/update-gitbar
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+#~/.tmux-gitbar/update-gitbar
+#[ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
-## Replace bash session with tmux (tmux autostart)
-if [[ ! $TERM =~ screen ]]; then
+# Replace bash session with tmux (tmux autostart)
+OSTYPE_MAC="darwin19"
+if [$OSTYPE = $OSTYPE_MAC]; then
+   if [[ ! $TERM =~ screen ]]; then
 	exec tmux attach
+   fi
 fi
+

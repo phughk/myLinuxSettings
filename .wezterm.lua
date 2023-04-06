@@ -10,8 +10,8 @@ wezterm.on("toggle-alert", function(window, pane)
 	window:set_config_overrides(overrides)
 end)
 
+-- font = wezterm.font("IBM Plex Mono", {weight="Regular"}),
 return {
-  font = wezterm.font("IBM Plex Mono", {weight="Regular"}),
   font_size = 15,
   freetype_load_target = "Light",
   color_scheme = "AdventureTime",

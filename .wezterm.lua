@@ -19,5 +19,6 @@ return {
   default_cursor_style = "BlinkingBlock",
   keys = {
     {key="A", mods="CTRL", action=wezterm.action{EmitEvent="toggle-alert"}},
+    {key="3", mods="SHIFT", action=wezterm.action{EmitEvent="toggle-alert"}},
   },
 }

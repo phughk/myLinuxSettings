@@ -1,0 +1,12 @@
+#!/bin/sh
+
+file_to_copy=$1
+found_file=$(find . -name "$file_to_copy" -type f -print -quit)
+
+if [ -z "$found_file" ]; then
+  echo "File not found in the current directory."
+  exit 1
+fi
+
+cp "$found_file" ~/.local/bin
+

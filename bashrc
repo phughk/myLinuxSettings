@@ -34,3 +34,5 @@ if [$OSTYPE = $OSTYPE_MAC]; then
    fi
 fi
 
+git config --global core.pager "less -FRX"
+
